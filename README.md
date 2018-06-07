@@ -5,6 +5,15 @@
 > the number of amused reactions each member's comments received
 > and publicising the victor back on the channel.
 
+## FUTURE IMPROVEMENTS
+
+* add this to a CI system - currently all automated but run from a local laptop.
+   * triggered to build then run tests on commits to an open pull request
+   * triggered to build->test->deploy on merges to master.
+* add sufficient tests that we can reliably deploy to the environment.
+   (i.e. *continuous deployment*)
+* use a centralised secrets manager to store the slack api key e.g. AWS Secrets Manager or Vault or SSM parameter store (at the moment it is manually configured as an env var to the lambda, after deployment.
+
 ## BUILD
 
 IN THIS REPO:
