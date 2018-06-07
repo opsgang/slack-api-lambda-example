@@ -23,7 +23,7 @@ IN THIS REPO:
 
     cd $__WD
 
-    local fl="-w -extldflags \"-static\" -X main.VERSION=$__V -X main.TIMESTAMP=build-$(date '+%Y%m%d%H%M%S')";
+    local fl="-w -extldflags \"-static\"";
     export CGO_ENABLED=0;
     su-exec root go build --ldflags "$fl" -o $GOBIN/pupkin .
 
