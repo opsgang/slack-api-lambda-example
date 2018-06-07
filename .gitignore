@@ -1,0 +1,5 @@
+pupkin
+pupkin.zip
+**/.terraform
+**/*.tfstate
+**/*.tfstate.backup
