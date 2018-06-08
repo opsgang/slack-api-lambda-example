@@ -16,6 +16,10 @@
 
 ## BUILD
 
+[![Run Status](https://api.shippable.com/projects/5b19bfbff9f9060700439319/badge?branch=master)](https://app.shippable.com/github/opsgang/slack-api-lambda-example)
+
+(shippable does build the binary but does not deploy to AWS lambda yet)
+
 IN THIS REPO:
 ```bash
 
