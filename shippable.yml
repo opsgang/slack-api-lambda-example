@@ -1,0 +1,32 @@
+# vim: et sr sw=2 ts=2 smartindent:
+#
+# Set to only build on git tag events and pull requests
+# in shippable console.
+language: go
+
+go:
+  - 1.10
+
+build:
+
+  ci:
+    - shippable_retry go get github.com/nlopes/slack
+    - shippable_retry go get github.com/aws/aws-lambda-go/lambda;
+      (
+        export LGOBIN=$GOBIN ; echo "GOBIN is $GOBIN" ;  
+        export CGO_ENABLED=0;
+        go build --ldflags '-w -extldflags "-static"' -o ./pupkin .
+      )
+    - ls -l ./pupkin
+
+  on_success: echo "ALL IS WELL"
+
+integrations:
+  notifications:
+    - integrationName: opsgang_slack_delivery
+      type: slack
+      recipients: "#delivery"
+      on_success: never
+      on_failure: never
+      on_pull_request: never
+

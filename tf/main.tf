@@ -4,6 +4,11 @@ provider "aws" {
     region = "eu-west-1"
 }
 
+variable "channel_id" {
+    default     = "CB3GPRC4U"
+    description = "see api channels.list method to get ids"
+}
+
 resource "aws_iam_role" "iam_for_example_lambda" {
   name = "iam_for_example_lambda"
 
@@ -35,7 +40,7 @@ resource "aws_lambda_function" "pupkin" {
   # API_KEY for slack must also be set, but this is a secret ...
   environment {
     variables = {
-      CHANNEL_ID = "CB3GPRC4U"
+      CHANNEL_ID = "${var.channel_id}"
     }
   }
 }

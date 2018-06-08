@@ -32,9 +32,9 @@ IN THIS REPO:
 
     cd $__WD
 
-    local fl="-w -extldflags \"-static\"";
+    fl="-w -extldflags \"-static\"";
     export CGO_ENABLED=0;
-    su-exec root go build --ldflags "$fl" -o $GOBIN/pupkin .
+    go build --ldflags "$fl" -o $GOBIN/pupkin .
 
 ```
 
