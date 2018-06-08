@@ -1,6 +1,6 @@
 # slack-api-lambda-example
 
-> Go binary deployed as a lambda.
+> Go binary deployed as an AWS lambda.
 > Determines who is the funniest member of a channel, by totalling
 > the number of amused reactions each member's comments received
 > and publicising the victor back on the channel.
@@ -45,16 +45,24 @@ To build manually:
 ## DEPLOY
 
 ```bash
-cd $__WD
-
-cd tf
+cd $__WD/tf
 
 cp -a $GOBIN/pupkin .
 zip pupkin.zip pupkin
 rm pupkin
 
 # export your AWS creds and then ...
+# ... export terraform vars - see tf/main.tf for variable descriptions.
+export TF_VAR_channel_id=my-channel-id # replace val with your channel's id
+export TF_VAR_results_posted_by="Rupert Pupkin Speaks! "
+export TF_VAR_icon_url="http://blog.edtechie.net/wp-content/uploads/2015/07/kingofcomedy.jpg"
+
 terraform init
 terraform plan -input=false
 terraform apply -input=false -auto-approve
 ```
+
+## POST DEPLOY
+
+Find the lambda and add the environment var `API_KEY`, with the value of an api token
+you've created in your slack org. As this is a secret we don't hard code it in to the terraform.

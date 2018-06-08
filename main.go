@@ -1,4 +1,15 @@
 package main
+/*
+
+To be compiled for an AWS lambda.
+
+Determine for a given slack channel the users who have received the
+most "amused" reactions to their comments, file uploads, posts etc
+since the start of today.
+
+Details of the winner and runner up (if any) are posted back on the channel.
+
+*/
 
 import (
 	"fmt"
@@ -11,6 +22,8 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+// reactionsLookup : lookup table used to filter slack reactions
+// for those that are considered "amused".
 var reactionsLookup = map[string]bool{
 	"grin":                          true,
 	"grinning":                      true,
@@ -29,18 +42,21 @@ var reactionsLookup = map[string]bool{
 	"sweat_smile": true,
 }
 
-const iconUrl = "http://blog.edtechie.net/wp-content/uploads/2015/07/kingofcomedy.jpg"
-
 func Handler() {
-	channelID := os.Getenv("CHANNEL_ID")
 	apiKey := os.Getenv("API_KEY")
+	channelID := os.Getenv("CHANNEL_ID")
+	iconUrl := os.Getenv("ICON_URL")
+	resultsPostedBy := os.Getenv("RESULTS_POSTED_BY")
 
 	api := slack.New(apiKey)
 
 	var amusingUsers = map[string]int{}
 
+	// ... work out the beginning of today as epoch secs
+	// to pass to the slack api's conversation.history endpoint.
 	t, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	oldest := strconv.FormatInt(t.Unix(), 10)
+
 	historyParams := slack.GetConversationHistoryParameters{
 		ChannelID: channelID,
 		Inclusive: true,
@@ -64,7 +80,9 @@ func Handler() {
 		}
 	}
 
-	// find all messages with reactions that are in the list
+	// userToCount{}
+	// represents a user whose comment got an amused reaction,
+	// and the total number of amused reactions they received.
 	type userToCount struct {
 		Id    string
 		Count int
@@ -83,6 +101,7 @@ func Handler() {
 	var winner string
 	var runnerUp string
 
+	// ... if their is a winner ...
 	if len(ss) > 0 {
 		if user, err := api.GetUserInfo(ss[0].Id); err == nil {
 			c := strconv.Itoa(ss[0].Count)
@@ -91,6 +110,7 @@ func Handler() {
 			winner = fmt.Sprintf(m, user.Name, c)
 		}
 
+		// ... and a runner up ...
 		if len(ss) > 1 {
 			if user, err := api.GetUserInfo(ss[1].Id); err == nil {
 				c := strconv.Itoa(ss[1].Count)
@@ -99,13 +119,13 @@ func Handler() {
 				runnerUp = fmt.Sprintf(m, user.Name, c)
 			}
 		}
-	} else {
+	} else { // ... or nobody was amused ...
 		msg = "Oh dear ... nobody was amused today ... Must be the weekend I guess ..."
 	}
 
 	params := slack.PostMessageParameters{
 		AsUser:   false,
-		Username: "Rupert Pupkin Speaks",
+		Username: resultsPostedBy,
 		IconURL:  iconUrl,
 		Markdown: true,
 	}

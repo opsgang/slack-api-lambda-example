@@ -5,8 +5,17 @@ provider "aws" {
 }
 
 variable "channel_id" {
-    default     = "CB3GPRC4U"
     description = "see api channels.list method to get ids"
+}
+
+variable "icon_url" {
+    default     = "http://blog.edtechie.net/wp-content/uploads/2015/07/kingofcomedy.jpg"
+    description = "The icon/image to display when winning results are posted back to slack"
+}
+
+variable "results_posted_by" {
+    default     = "Rupert Pupkin Speaks!"
+    description = "The name to display when the winning results are posted back to slack"
 }
 
 resource "aws_iam_role" "iam_for_example_lambda" {
@@ -30,17 +39,19 @@ EOF
 }
 
 resource "aws_lambda_function" "pupkin" {
-  filename         = "../pupkin.zip"
+  filename         = "pupkin.zip"
   function_name    = "pupkin"
   role             = "${aws_iam_role.iam_for_example_lambda.arn}"
   handler          = "pupkin"
-  source_code_hash = "${base64sha256(file("../pupkin.zip"))}"
+  source_code_hash = "${base64sha256(file("pupkin.zip"))}"
   runtime          = "go1.x"
 
   # API_KEY for slack must also be set, but this is a secret ...
   environment {
     variables = {
-      CHANNEL_ID = "${var.channel_id}"
+      CHANNEL_ID        = "${var.channel_id}"
+      ICON_URL          = "${var.icon_url}"
+      RESULTS_POSTED_BY = "${var.results_posted_by}"
     }
   }
 }
