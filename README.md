@@ -20,7 +20,7 @@
 
 (shippable does build the binary but does not deploy to AWS lambda yet)
 
-IN THIS REPO:
+To build manually:
 ```bash
 
 # ... assuming you are set up for go1.x
